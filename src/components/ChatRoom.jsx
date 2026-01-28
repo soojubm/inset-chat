@@ -1,11 +1,26 @@
 import { useState } from "react";
 import ChatMessages from "./ChatMessages";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { postChat } from "../api/chat";
+import { fetchDevMessages, insertDevMessages } from "../api/messages";
 
 export default function ChatRoom({ roomID }) {
+  const qc = useQueryClient();
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
+
+  const { data: dev_messages = [], isLoading } = useQuery({
+    queryKey: ["dev_messages"],
+    queryFn: fetchDevMessages,
+    enabled: roomID == 2, // dev 방일 때만 가져오기
+  });
+
+  const insertMutation = useMutation({
+    mutationFn: insertDevMessages,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["dev_messages"] }); // 목록 갱신
+    },
+  });
 
   const chatMutation = useMutation({
     mutationFn: postChat,
@@ -16,9 +31,7 @@ export default function ChatRoom({ roomID }) {
 
       setMessages((prev) =>
         prev.map((m) =>
-          m.id == id
-            ? { ...m, role: "other", content: text, status: "done" }
-            : m,
+          m.id == id ? { ...m, role: false, content: text, status: "done" } : m,
         ),
       );
     },
@@ -30,7 +43,7 @@ export default function ChatRoom({ roomID }) {
           m.id == id
             ? {
                 ...m,
-                role: "other",
+                role: false,
                 content: "다시 시도해주세요. 죄송합니다.",
                 status: "error",
               }
@@ -43,10 +56,11 @@ export default function ChatRoom({ roomID }) {
   const onSubmitAction = (e) => {
     e.preventDefault();
 
-    setMessages((prev) => [...prev, { role: "me", content: message }]);
-    setMessage("");
+    setMessages((prev) => [...prev, { role: true, content: message }]);
 
-    if (roomID === "ai") {
+    console.log(roomID);
+
+    if (roomID == 4) {
       const id = crypto.randomUUID();
 
       console.log(id);
@@ -55,14 +69,24 @@ export default function ChatRoom({ roomID }) {
         ...prev,
         {
           id: id,
-          role: "other",
+          role: false,
           content: "",
           status: "pending",
         },
       ]);
 
-      chatMutation.mutate({ message: message, id });
+      chatMutation.mutate({ message: message, id: id });
     }
+    if (roomID == 2) {
+      insertMutation.mutate({
+        role: false,
+        content: message,
+        status: "done",
+      });
+      return;
+    }
+
+    setMessage("");
   };
 
   return (
@@ -71,7 +95,11 @@ export default function ChatRoom({ roomID }) {
         <span className="chatRoomName">{roomID}</span>
       </div>
 
-      <ChatMessages messages={messages} />
+      {roomID == 2 ? (
+        <ChatMessages messages={dev_messages} />
+      ) : (
+        <ChatMessages messages={messages} />
+      )}
 
       <form className="chatInputBar" onSubmit={onSubmitAction}>
         <input

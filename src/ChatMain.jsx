@@ -11,7 +11,7 @@ import Spacer from "./components/Spacer";
 
 export default function ChatMain() {
   const [activeRoomId, setActiveRoomId] = useState(null);
-
+  const [isCreating, setIsCreating] = useState(false);
   return (
     <div className="chatApp">
       <div className="chatBody">
@@ -21,7 +21,12 @@ export default function ChatMain() {
           </header>
           <Spacer size={4} />
           <Spacer size={4} />
-          <MenuItem icon={<FilePen size={16} />} onClick={() => {}}>
+          <MenuItem
+            icon={<FilePen size={16} />}
+            onClick={() => {
+              setIsCreating(true);
+            }}
+          >
             새 채팅
           </MenuItem>
           <Spacer size={4} />
@@ -32,6 +37,8 @@ export default function ChatMain() {
           <RoomsPanel
             activeRoomId={activeRoomId}
             setActiveRoomId={setActiveRoomId}
+            isCreating={isCreating}
+            closeCreating={() => setIsCreating(false)}
           />
         </aside>
 

@@ -7,17 +7,6 @@ const rooms = [
   { id: "bonono", title: "ㅇㅇㅇㅇ" },
 ];
 
-const generalMessages = [
-  { role: "other", content: "안녕", status: "done" },
-  { role: "me", content: "Hello", status: "done" },
-  { role: "other", content: "맛집 추천", status: "done" },
-  { role: "me", content: "나도 몰라", status: "done" },
-  { role: "other", content: "안녕", status: "done" },
-  { role: "me", content: "안녕", status: "done" },
-  { role: "me", content: "안녕", status: "done" },
-  { role: "other", content: "안녕", status: "done" },
-];
-
 // 에러 데모용: 20% 확률로 실패
 const maybeFail = () => Math.random() < 0.2;
 

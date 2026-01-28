@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { SyncLoader } from "react-spinners";
 
 const override = {
@@ -12,7 +12,7 @@ export default function ChatMessages({ messages }) {
     <div className="chatMessages">
       {messages.map((mes) => (
         <div
-          className={`msg ${mes.role == "me" && "me"} ${mes.status == "error" && "error"}`}
+          className={`msg ${mes.role == false && "me"} ${mes.status == "error" && "error"}`}
         >
           {mes.status === "pending" ? (
             <SyncLoader

@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { RoomsList } from "./RoomsList.jsx";
@@ -41,7 +41,12 @@ function RoomsErrorFallback({ error, resetErrorBoundary }) {
   );
 }
 
-export function RoomsPanel({ activeRoomId, setActiveRoomId }) {
+export function RoomsPanel({
+  activeRoomId,
+  setActiveRoomId,
+  isCreating,
+  closeCreating,
+}) {
   return (
     <QueryErrorResetBoundary>
       {({ reset }) => (
@@ -50,6 +55,8 @@ export function RoomsPanel({ activeRoomId, setActiveRoomId }) {
             <RoomsList
               activeRoomId={activeRoomId}
               onSelectRoom={setActiveRoomId}
+              isCreating={isCreating}
+              closeCreating={closeCreating}
             />
           </Suspense>
         </ErrorBoundary>

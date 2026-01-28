@@ -30,6 +30,7 @@ export default function ChatRoom({ roomID }) {
     if (initializedRoomRef.current === roomID) return;
     initializedRoomRef.current = roomID;
 
+    // eslint-disable-next-line
     setMessages(
       roomMessages.map((m) => ({
         id: m.id,
